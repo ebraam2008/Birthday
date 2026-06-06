@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 17 Transition</title>
+    <style>
+        /* --- Global Styles --- */
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        /* --- Floating Hearts Background (Flawless SVG) --- */
+        .heart {
+            position: absolute;
+            bottom: -60px;
+            fill: rgba(255, 105, 180, 0.45); /* Sets the pink color */
+            animation: floatUp 8s infinite linear;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% { bottom: -60px; opacity: 0; transform: translateY(0) rotate(0deg); }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { bottom: 105vh; opacity: 0; transform: translateY(-100px) rotate(20deg); }
+        }
+
+        /* --- UI Buttons --- */
+        button {
+            background: linear-gradient(135deg, #ff4a7d 0%, #e03565 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 74, 125, 0.4);
+            transition: transform 0.2s, background-color 0.2s, opacity 0.4s ease;
+            margin-top: 40px;
+            z-index: 10;
+        }
+
+        button:hover { transform: scale(1.05); }
+        button:active { transform: scale(0.98); }
+        .hidden { display: none !important; }
+
+        /* --- Number (Age) --- */
+        .age-number {
+            font-size: 6rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, #9b1c31 0%, #ff2a5f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pop-animation {
+            animation: popChange 0.8s forwards;
+        }
+
+        @keyframes popChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); filter: drop-shadow(0px 10px 15px rgba(255,42,95,0.4)); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Cake Elements --- */
+        .cake-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .torches-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: -5px;
+            z-index: 2;
+        }
+
+        .torch {
+            width: 8px;
+            height: 35px;
+            background: linear-gradient(to bottom, #fff, #ffccd5);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .flame {
+            width: 12px;
+            height: 18px;
+            background: radial-gradient(circle, #ffea00 20%, #ff5100 100%);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -16px;
+            left: -2px;
+            animation: flicker 0.1s ease-in-out infinite alternate;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 1, 1);
+        }
+
+        .flame.fade-out {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-1deg); }
+            100% { transform: scale(1.1) rotate(1deg); filter: drop-shadow(0 0 6px #ff5100); }
+        }
+
+        .cake-body {
+            width: 150px;
+            height: 90px;
+            background: #fff0f5;
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset 0 -15px 0 #fbcbc9, 0 8px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .cake-body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 14px;
+            background: #ff758c;
+            top: 25px;
+            left: 0;
+        }
+
+        /* --- 3D Gift Box Container --- */
+        .gift-wrapper {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            perspective: 600px;
+            opacity: 0;
+            transform: scale(0.4) translateY(50px);
+            transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .gift-wrapper.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .gift-box-3d {
+            width: 120px;
+            height: 120px;
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            background: #d1345b;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .gift-box-3d::before { 
+            content: '';
+            position: absolute;
+            background: #fff0f3;
+            box-shadow: 0 0 4px rgba(0,0,0,0.05);
+            width: 24px; 
+            height: 100%; 
+            left: 48px; 
+        }
+
+        .gift-lid {
+            width: 130px;
+            height: 30px;
+            background: #ff4a7d;
+            position: absolute;
+            top: 2px;
+            left: 10px;
+            border-radius: 4px;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.1);
+            z-index: 3;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: left bottom;
+        }
+
+        .gift-lid::before {
+            content: '';
+            position: absolute;
+            background: #fff0f3;
+            width: 24px;
+            height: 100%;
+            left: 53px;
+        }
+
+        .bow-container {
+            position: absolute;
+            top: -22px;
+            left: 45px;
+            width: 60px;
+            height: 25px;
+            z-index: 4;
+            transition: transform 0.6s ease;
+            transform-origin: left bottom;
+        }
+        .bow-left, .bow-right {
+            width: 25px;
+            height: 20px;
+            border: 4px solid #fff0f3;
+            border-radius: 50%;
+            position: absolute;
+            background: transparent;
+        }
+        .bow-left { transform: rotate(-30deg); left: 2px; }
+        .bow-right { transform: rotate(30deg); right: 2px; }
+
+        .gift-wrapper.open-lid .gift-lid {
+            transform: rotateZ(-110deg) translate(-20px, -20px);
+        }
+        .gift-wrapper.open-lid .bow-container {
+            transform: rotateZ(-110deg) translate(-20px, -20px);
+            opacity: 0.5;
+        }
+
+        /* --- Light Pink Paper / Letter --- */
+        .paper-container {
+            display: none;
+            position: absolute;
+            top: 22%;
+            z-index: 20;
+        }
+
+        .paper {
+            width: 330px;
+            height: 250px;
+            background-color: #fff2f5;
+            border: 1px solid #ffdae2;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(224, 53, 101, 0.2);
+            padding: 25px;
+            box-sizing: border-box;
+            transform: scale(0) translateY(100px);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+        }
+
+        .paper.reveal {
+            transform: scale(1) translateY(0);
+        }
+
+        .paper textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #5c4349;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="age" class="age-number">16</div>
+
+        <div id="cakeSection" class="cake-wrapper">
+            <div class="torches-container">
+                <div class="torch"><div class="flame"></div></div>
+                <div class="torch"><div class="flame"></div></div>
+                <div class="torch"><div class="flame"></div></div>
+            </div>
+            <div class="cake-body"></div>
+        </div>
+
+        <div id="giftSection" class="gift-wrapper hidden">
+            <div class="bow-container">
+                <div class="bow-left"></div>
+                <div class="bow-right"></div>
+            </div>
+            <div class="gift-lid"></div>
+            <div class="gift-box-3d"></div>
+        </div>
+
+        <button id="nextBtn">Next Chapter</button>
+        <button id="openBtn" class="hidden">Open</button>
+
+        <div id="paperContainer" class="paper-container">
+            <div id="paper" class="paper">
+<textarea>
+Happy 17th Birthday! 🎂
+
+Welcome to your next chapter. 
+May this year bring you closer to all your dreams and goals.
+
+(You can change this text inside the code!)
+</textarea>
+</div>
+        </div>
+    </div>
+
+    <script>
+        function createHearts() {
+            const body = document.body;
+            for (let i = 0; i < 15; i++) {
+                // Create an SVG element instead of a standard div
+                let heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                heart.classList.add('heart');
+                heart.setAttribute("viewBox", "0 0 24 24");
+                
+                // Perfect mathematical heart path
+                heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
+                
+                // Random positioning
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                
+                // Adjust sizing safely here (e.g., between 35px and 55px)
+                let size = Math.random() * 20 + 35;
+                heart.style.width = size + 'px';
+                heart.style.height = size + 'px';
+                
+                body.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        const nextBtn = document.getElementById('nextBtn');
+        const openBtn = document.getElementById('openBtn');
+        const cakeSection = document.getElementById('cakeSection');
+        const giftSection = document.getElementById('giftSection');
+        const ageDisplay = document.getElementById('age');
+        const flames = document.querySelectorAll('.flame');
+        const paperContainer = document.getElementById('paperContainer');
+        const paper = document.getElementById('paper');
+
+        nextBtn.addEventListener('click', () => {
+            nextBtn.classList.add('hidden');
+            ageDisplay.classList.add('pop-animation');
+            ageDisplay.textContent = '17';
+
+            setTimeout(() => {
+                flames.forEach(flame => {
+                    flame.classList.add('fade-out');
+                });
+
+                setTimeout(() => {
+                    cakeSection.style.opacity = '0';
+                    cakeSection.style.transform = 'scale(0.7)';
+
+                    setTimeout(() => {
+                        cakeSection.classList.add('hidden');
+                        giftSection.classList.remove('hidden');
+                        
+                        setTimeout(() => {
+                            giftSection.classList.add('show');
+                            openBtn.classList.remove('hidden');
+                        }, 50);
+                    }, 800);
+                }, 1000);
+            }, 700);
+        });
+
+        openBtn.addEventListener('click', () => {
+            openBtn.classList.add('hidden');
+            giftSection.classList.add('open-lid');
+
+            setTimeout(() => {
+                giftSection.style.opacity = '0';
+                giftSection.style.transform = 'scale(0.5) translateY(50px)';
+
+                setTimeout(() => {
+                    giftSection.classList.add('hidden');
+                    paperContainer.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        paper.classList.add('reveal');
+                    }, 50);
+                }, 400);
+            }, 700);
+        });
+    </script>
+</body>
+</html>
