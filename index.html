@@ -38,7 +38,7 @@
         .heart {
             position: absolute;
             bottom: -60px;
-            fill: rgba(255, 105, 180, 0.45); /* Sets the pink color */
+            fill: rgba(255, 105, 180, 0.45);
             animation: floatUp 8s infinite linear;
             z-index: 1;
             pointer-events: none;
@@ -289,6 +289,8 @@
 </head>
 <body>
 
+    <audio id="bgMusic" src="something-about-you.mp3" loop></audio>
+
     <div class="container">
         <div id="age" class="age-number">16</div>
 
@@ -320,30 +322,25 @@ Happy 17th Birthday! 🎂
 
 Welcome to your next chapter. 
 May this year bring you closer to all your dreams and goals.
-
-(You can change this text inside the code!)
 </textarea>
 </div>
         </div>
     </div>
 
     <script>
+        // --- Generate Large Floating Hearts Background ---
         function createHearts() {
             const body = document.body;
             for (let i = 0; i < 15; i++) {
-                // Create an SVG element instead of a standard div
                 let heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 heart.classList.add('heart');
                 heart.setAttribute("viewBox", "0 0 24 24");
-                
-                // Perfect mathematical heart path
                 heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
                 
-                // Random positioning
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.animationDelay = Math.random() * 5 + 's';
                 
-                // Adjust sizing safely here (e.g., between 35px and 55px)
+                // Perfectly proportioned large sizing variable (35px to 55px)
                 let size = Math.random() * 20 + 35;
                 heart.style.width = size + 'px';
                 heart.style.height = size + 'px';
@@ -353,6 +350,7 @@ May this year bring you closer to all your dreams and goals.
         }
         createHearts();
 
+        // --- Core Interaction Logics ---
         const nextBtn = document.getElementById('nextBtn');
         const openBtn = document.getElementById('openBtn');
         const cakeSection = document.getElementById('cakeSection');
@@ -361,17 +359,25 @@ May this year bring you closer to all your dreams and goals.
         const flames = document.querySelectorAll('.flame');
         const paperContainer = document.getElementById('paperContainer');
         const paper = document.getElementById('paper');
+        const bgMusic = document.getElementById('bgMusic');
 
         nextBtn.addEventListener('click', () => {
             nextBtn.classList.add('hidden');
+
+            // 🎵 Trigger Eyedress - Something About You immediately on click
+            bgMusic.play().catch(error => console.log("Music play blocked or pending track file:", error));
+
+            // 1. First step: Age pops up to 17
             ageDisplay.classList.add('pop-animation');
             ageDisplay.textContent = '17';
 
+            // 2. Second step: Wait 700ms for text pop, then extinguish torches
             setTimeout(() => {
                 flames.forEach(flame => {
                     flame.classList.add('fade-out');
                 });
 
+                // 3. Third step: Wait 1000ms after candles die out, then fade out cake layout
                 setTimeout(() => {
                     cakeSection.style.opacity = '0';
                     cakeSection.style.transform = 'scale(0.7)';
