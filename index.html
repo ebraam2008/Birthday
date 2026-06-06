@@ -362,22 +362,26 @@ May this year bring you closer to all your dreams and goals.
         const bgMusic = document.getElementById('bgMusic');
 
         nextBtn.addEventListener('click', () => {
+            // 1. PLAY THE SONG FIRST (This tells iOS the user explicitly allowed audio)
+            bgMusic.play().then(() => {
+                console.log("Audio playing successfully.");
+            }).catch(error => {
+                console.log("Audio play blocked:", error);
+            });
+
+            // 2. Hide the button immediately
             nextBtn.classList.add('hidden');
 
-            // 🎵 Trigger Eyedress - Something About You immediately on click
-            bgMusic.play().catch(error => console.log("Music play blocked or pending track file:", error));
-
-            // 1. First step: Age pops up to 17
+            // 3. Trigger the 17 pop animation
             ageDisplay.classList.add('pop-animation');
             ageDisplay.textContent = '17';
 
-            // 2. Second step: Wait 700ms for text pop, then extinguish torches
+            // 4. Run the rest of your timed candle/cake animations safely
             setTimeout(() => {
                 flames.forEach(flame => {
                     flame.classList.add('fade-out');
                 });
 
-                // 3. Third step: Wait 1000ms after candles die out, then fade out cake layout
                 setTimeout(() => {
                     cakeSection.style.opacity = '0';
                     cakeSection.style.transform = 'scale(0.7)';
