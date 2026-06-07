@@ -17,7 +17,7 @@
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -25,8 +25,8 @@
             text-align: center;
             position: relative;
             width: 100%;
-            max-width: 500px;
-            height: 500px;
+            max-width: 600px;
+            min-height: 550px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -34,7 +34,7 @@
             z-index: 5;
         }
 
-        /* --- Floating Hearts Background (Flawless SVG) --- */
+        /* --- Floating Hearts Background --- */
         .heart {
             position: absolute;
             bottom: -60px;
@@ -51,6 +51,22 @@
             100% { bottom: 105vh; opacity: 0; transform: translateY(-100px) rotate(20deg); }
         }
 
+        /* --- Confetti Particles --- */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            z-index: 2;
+            opacity: 0;
+            top: -20px;
+            animation: fall 3s ease-out forwards;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+        }
+
         /* --- UI Buttons --- */
         button {
             background: linear-gradient(135deg, #ff4a7d 0%, #e03565 100%);
@@ -62,7 +78,7 @@
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 6px 20px rgba(255, 74, 125, 0.4);
-            transition: transform 0.2s, background-color 0.2s, opacity 0.4s ease;
+            transition: transform 0.2s, background-color 0.2s;
             margin-top: 40px;
             z-index: 10;
         }
@@ -70,6 +86,18 @@
         button:hover { transform: scale(1.05); }
         button:active { transform: scale(0.98); }
         .hidden { display: none !important; }
+
+        /* Smooth fade-in style for the Open button */
+        .open-btn-style {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .open-btn-style.reveal-active {
+            opacity: 1;
+            transform: scale(1);
+        }
 
         /* --- Number (Age) --- */
         .age-number {
@@ -98,7 +126,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transition: opacity 0.8s ease, transform 0.8s ease, filter 0.3s ease;
+        }
+
+        .cake-wrapper:hover {
+            transform: translateY(-8px) scale(1.02);
+            filter: drop-shadow(0 0 15px rgba(255, 74, 125, 0.6));
+            cursor: pointer;
         }
 
         .torches-container {
@@ -157,7 +191,7 @@
             left: 0;
         }
 
-        /* --- 3D Gift Box Container --- */
+        /* --- 3D Gift Box --- */
         .gift-wrapper {
             width: 150px;
             height: 150px;
@@ -166,12 +200,20 @@
             opacity: 0;
             transform: scale(0.4) translateY(50px);
             transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                        transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                        transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                        filter 0.3s ease;
         }
 
         .gift-wrapper.show {
             opacity: 1;
             transform: scale(1) translateY(0);
+        }
+
+        /* Keep the hover effect styling active */
+        .gift-wrapper.show:hover {
+            transform: translateY(-10px) scale(1.05);
+            filter: drop-shadow(0 0 20px rgba(209, 52, 91, 0.7));
+            cursor: pointer;
         }
 
         .gift-box-3d {
@@ -189,7 +231,6 @@
             content: '';
             position: absolute;
             background: #fff0f3;
-            box-shadow: 0 0 4px rgba(0,0,0,0.05);
             width: 24px; 
             height: 100%; 
             left: 48px; 
@@ -247,28 +288,32 @@
             opacity: 0.5;
         }
 
-        /* --- Light Pink Paper / Letter --- */
-        .paper-container {
+        /* --- Letter Deck Container --- */
+        .reveal-deck {
             display: none;
-            position: absolute;
-            top: 22%;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px;
             z-index: 20;
+            box-sizing: border-box;
         }
 
+        /* --- Light Pink Paper / Letter --- */
         .paper {
-            width: 330px;
-            height: 250px;
+            width: 340px;
+            height: 280px;
             background-color: #fff2f5;
             border: 1px solid #ffdae2;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(224, 53, 101, 0.2);
+            box-shadow: 0 15px 35px rgba(224, 53, 101, 0.15);
             padding: 25px;
             box-sizing: border-box;
-            transform: scale(0) translateY(100px);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.25);
+            transform: scale(0) translateY(50px);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.25);
         }
 
-        .paper.reveal {
+        .reveal-deck.active .paper {
             transform: scale(1) translateY(0);
         }
 
@@ -280,7 +325,7 @@
             resize: none;
             outline: none;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             color: #5c4349;
             font-weight: 600;
@@ -313,22 +358,22 @@
         </div>
 
         <button id="nextBtn">Next Chapter</button>
-        <button id="openBtn" class="hidden">Open</button>
+        <button id="openBtn" class="hidden open-btn-style">Open</button>
 
-        <div id="paperContainer" class="paper-container">
-            <div id="paper" class="paper">
-<textarea readonly>
+        <div id="revealDeck" class="reveal-deck">
+            <div class="paper">
+                <textarea readonly>
 Happy 17th Birthday! 🎂
 
 Welcome to your next chapter. 
 May this year bring you closer to all your dreams and goals.
-</textarea>
-</div>
+                </textarea>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- Generate Large Floating Hearts Background ---
+        // --- Generate Floating Hearts ---
         function createHearts() {
             const body = document.body;
             for (let i = 0; i < 15; i++) {
@@ -336,51 +381,56 @@ May this year bring you closer to all your dreams and goals.
                 heart.classList.add('heart');
                 heart.setAttribute("viewBox", "0 0 24 24");
                 heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
-                
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.animationDelay = Math.random() * 5 + 's';
-                
-                // Perfectly proportioned large sizing variable (35px to 55px)
                 let size = Math.random() * 20 + 35;
                 heart.style.width = size + 'px';
                 heart.style.height = size + 'px';
-                
                 body.appendChild(heart);
             }
         }
         createHearts();
 
-        // --- Core Interaction Logics ---
+        // --- Generate Confetti ---
+        function triggerConfetti() {
+            const body = document.body;
+            const colors = ['#ff4a7d', '#ff85a2', '#ffccd5', '#fff0f3', '#ffe3e8'];
+            for (let i = 0; i < 60; i++) {
+                let confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 6 + 6 + 'px';
+                confetti.style.height = Math.random() * 12 + 8 + 'px';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = Math.random() * 1.5 + 2 + 's';
+                body.appendChild(confetti);
+            }
+        }
+
+        // --- Core Logics ---
         const nextBtn = document.getElementById('nextBtn');
         const openBtn = document.getElementById('openBtn');
         const cakeSection = document.getElementById('cakeSection');
         const giftSection = document.getElementById('giftSection');
         const ageDisplay = document.getElementById('age');
         const flames = document.querySelectorAll('.flame');
-        const paperContainer = document.getElementById('paperContainer');
-        const paper = document.getElementById('paper');
+        const revealDeck = document.getElementById('revealDeck');
         const bgMusic = document.getElementById('bgMusic');
 
+        // Track if the gift box has loaded and is ready for a touch
+        let giftReady = false; 
+
         nextBtn.addEventListener('click', () => {
-            // 1. PLAY THE SONG FIRST (This tells iOS the user explicitly allowed audio)
-            bgMusic.play().then(() => {
-                console.log("Audio playing successfully.");
-            }).catch(error => {
-                console.log("Audio play blocked:", error);
-            });
-
-            // 2. Hide the button immediately
             nextBtn.classList.add('hidden');
+            bgMusic.play().catch(error => console.log("Music waiting:", error));
 
-            // 3. Trigger the 17 pop animation
             ageDisplay.classList.add('pop-animation');
             ageDisplay.textContent = '17';
+            triggerConfetti();
 
-            // 4. Run the rest of your timed candle/cake animations safely
             setTimeout(() => {
-                flames.forEach(flame => {
-                    flame.classList.add('fade-out');
-                });
+                flames.forEach(flame => flame.classList.add('fade-out'));
 
                 setTimeout(() => {
                     cakeSection.style.opacity = '0';
@@ -392,15 +442,37 @@ May this year bring you closer to all your dreams and goals.
                         
                         setTimeout(() => {
                             giftSection.classList.add('show');
-                            openBtn.classList.remove('hidden');
+                            // The gift box is now fully on screen
+                            giftReady = true; 
                         }, 50);
                     }, 800);
                 }, 1000);
             }, 700);
         });
 
+        // 👉 FIX: The button waits completely until the user touches the gift!
+        giftSection.addEventListener('click', () => {
+            if (giftReady && openBtn.classList.contains('hidden')) {
+                // Give it a subtle pop effect when touched
+                giftSection.style.transform = 'scale(1.08) translateY(-5px)';
+                setTimeout(() => {
+                    giftSection.style.transform = 'scale(1) translateY(0)';
+                }, 150);
+
+                // Now smoothly unhide and fade-in the open button
+                openBtn.classList.remove('hidden');
+                setTimeout(() => {
+                    openBtn.classList.add('reveal-active');
+                }, 50);
+            }
+        });
+
         openBtn.addEventListener('click', () => {
-            openBtn.classList.add('hidden');
+            openBtn.classList.remove('reveal-active');
+            setTimeout(() => {
+                openBtn.classList.add('hidden');
+            }, 400);
+            
             giftSection.classList.add('open-lid');
 
             setTimeout(() => {
@@ -409,10 +481,10 @@ May this year bring you closer to all your dreams and goals.
 
                 setTimeout(() => {
                     giftSection.classList.add('hidden');
-                    paperContainer.style.display = 'block';
                     
+                    revealDeck.style.display = 'flex';
                     setTimeout(() => {
-                        paper.classList.add('reveal');
+                        revealDeck.classList.add('active');
                     }, 50);
                 }, 400);
             }, 700);
