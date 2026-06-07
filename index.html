@@ -10,9 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
             min-height: 100vh;
-            /* Support for iOS Safari dynamic toolbar height */
             min-height: -webkit-fill-available; 
             display: flex;
             flex-direction: column;
@@ -23,11 +21,22 @@
             position: relative;
         }
 
+        /* 👉 iOS FIX: Attaching the gradient to a pseudo-element avoids Safari's height blending bug completely */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            z-index: -1;
+        }
+
         html {
             height: -webkit-fill-available;
         }
 
-        /* 👉 iOS FIX: Completely fluid container bounds to prevent overflow stacking */
         .container {
             text-align: center;
             position: relative;
@@ -89,14 +98,13 @@
             transition: transform 0.2s, background-color 0.2s;
             margin-top: 30px;
             z-index: 10;
-            -webkit-tap-highlight-color: transparent; /* Removes ugly gray flash on iOS */
+            -webkit-tap-highlight-color: transparent;
         }
 
         button:hover { transform: scale(1.05); }
         button:active { transform: scale(0.98); }
         .hidden { display: none !important; }
 
-        /* Smooth fade-in style for the Open button */
         .open-btn-style {
             opacity: 0;
             transform: scale(0.9);
@@ -110,7 +118,7 @@
 
         /* --- Number (Age) --- */
         .age-number {
-            font-size: 5rem; /* Scaled down slightly for mobile harmony */
+            font-size: 5rem;
             font-weight: 900;
             margin-bottom: 15px;
             background: linear-gradient(180deg, #9b1c31 0%, #ff2a5f 100%);
@@ -310,7 +318,7 @@
         /* --- Light Pink Paper / Letter --- */
         .paper {
             width: 100%;
-            max-width: 320px; /* Adapts perfectly to small iPhone screens */
+            max-width: 320px;
             height: 260px;
             background-color: #fff2f5;
             border: 1px solid #ffdae2;
@@ -457,7 +465,6 @@ May this year bring you closer to all your dreams and goals.
             }, 700);
         });
 
-        // Tapping the gift triggers the button
         giftSection.addEventListener('click', () => {
             if (giftReady && openBtn.classList.contains('hidden')) {
                 giftSection.style.transform = 'scale(1.06) translateY(-4px)';
